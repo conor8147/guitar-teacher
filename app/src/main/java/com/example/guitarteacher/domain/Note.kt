@@ -1,4 +1,4 @@
-package com.example.guitarteacher
+package com.example.guitarteacher.domain
 
 enum class Note(val noteString: String) {
     A("A"),

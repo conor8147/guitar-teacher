@@ -1,5 +1,8 @@
-package com.example.guitarteacher
+package com.example.guitarteacher.domain
 
+/**
+ * Representation of a fretboard.
+ */
 interface Fretboard {
     /**
      * Get open note for given string.
