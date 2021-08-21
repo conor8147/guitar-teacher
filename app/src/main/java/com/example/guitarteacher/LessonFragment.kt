@@ -20,22 +20,17 @@ import javax.inject.Inject
 import kotlin.properties.Delegates.notNull
 
 @AndroidEntryPoint
-class MainFragment : Fragment() {
+class LessonFragment : Fragment() {
 
-    @Inject
-    lateinit var fretboard: Fretboard
-
-    @Inject
-    lateinit var repository: AppRepository
-
-    @Inject
-    lateinit var timerFactory: TimerFactory
+    @Inject lateinit var fretboard: Fretboard
+    @Inject lateinit var repository: AppRepository
+    @Inject lateinit var timerFactory: TimerFactory
 
     lateinit var remainingTimePb: ProgressBar
     lateinit var fretAnswerTv: TextView
     lateinit var noteTv: TextView
 
-    private var periodMillis by notNull<Long>()
+    private var timePerNote by notNull<Long>()
     private var guitarString by notNull<Int>()
 
     /** Timer for the entire lesson */
@@ -43,7 +38,7 @@ class MainFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        periodMillis = repository.getRoundPeriod() * 1000L // TODO get rid of these magic numbers, all time should be converted to millis before it is stored by the repo, and use millis everywhere internally.
+        timePerNote = repository.getTimePerNote() * 1000L // TODO get rid of these magic numbers, all time should be converted to millis before it is stored by the repo, and use millis everywhere internally.
         guitarString = repository.getGuitarString()
 
         lessonTimer = timerFactory.createTimer(
@@ -66,7 +61,7 @@ class MainFragment : Fragment() {
         fretAnswerTv = findViewById(R.id.fretAnswerTv)
         noteTv = findViewById((R.id.noteTv))
 
-        remainingTimePb.max = periodMillis.toInt()
+        remainingTimePb.max = timePerNote.toInt()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,7 +84,7 @@ class MainFragment : Fragment() {
             var finished: Boolean
 
             val noteCountdown = timerFactory.createTimer(
-                totalTime = periodMillis,
+                totalTime = timePerNote,
                 tickLength = NOTE_COUNTDOWN_TIMER_TICK_LENGTH,
                 onTick = { millisRemaining ->
                     remainingTimePb.progress = millisRemaining.toInt()

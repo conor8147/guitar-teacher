@@ -20,12 +20,12 @@ interface AppRepository {
     /**
      * Get time per note in seconds.
      */
-    fun getRoundPeriod(): Int
+    fun getTimePerNote(): Int
 
     /**
      * Set time per note in seconds.
      */
-    fun writeRoundPeriod(seconds: Int)
+    fun writeTimePerNote(seconds: Int)
 
     /**
      * Get guitar string the user will be tested on.
@@ -58,12 +58,12 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getRoundPeriod(): Int = sharedPrefs.getInt(
+    override fun getTimePerNote(): Int = sharedPrefs.getInt(
         ROUND_PERIOD_KEY,
         DEFAULT_ROUND_PERIOD_SECONDS
     )
 
-    override fun writeRoundPeriod(seconds: Int) {
+    override fun writeTimePerNote(seconds: Int) {
         with(sharedPrefs.edit()) {
             putInt(ROUND_PERIOD_KEY, seconds)
             apply()
