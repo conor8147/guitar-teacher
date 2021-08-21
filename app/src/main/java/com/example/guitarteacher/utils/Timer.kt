@@ -34,7 +34,7 @@ interface Timer {
     fun reset()
 
     /**
-     * Cancel any processes currently running in this timer.
+     * Cancel any processes currently running in this timer. Calling this when the timer is already cancelled will have no effect
      */
     fun cancel()
 

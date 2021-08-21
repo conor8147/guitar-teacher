@@ -14,9 +14,16 @@ class StandardFretboard @Inject constructor() : Fretboard {
     /**
      * Map of String to Note for each string on the guitar.
      */
-    private val tuning = strings.zip(openNotes).toMap()
+    override val tuning = strings.zip(openNotes).toMap()
 
-    override fun getTuningOfString(string: Int): Note? = tuning[string]
+    override fun getFretForNoteOnString(note: Note, guitarString: Int): Int {
+        val openNote = tuning[guitarString]
+        val openNoteIndex = Note.values().indexOf(openNote)
+        val goalNoteIndex = Note.values().indexOf(note)
 
-    override fun getStrings(): List<Int> = tuning.keys.sorted()
+        return Math.floorMod(
+            (goalNoteIndex - openNoteIndex),
+            Note.values().size
+        )
+    }
 }

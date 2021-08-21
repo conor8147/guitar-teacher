@@ -5,9 +5,8 @@ import com.example.guitarteacher.AppRepository
 import com.example.guitarteacher.AppRepositoryImpl
 import com.example.guitarteacher.domain.Fretboard
 import com.example.guitarteacher.StandardFretboard
-import com.example.guitarteacher.utils.CrappyTimer
 import com.example.guitarteacher.utils.TimerFactory
-import com.example.guitarteacher.utils.TimerImpl
+import com.example.guitarteacher.utils.CountdownTimer
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,5 +23,5 @@ abstract class AppModule(private val context: Context) {
     abstract fun bindFretboard(fretboard: StandardFretboard): Fretboard
 
     @Binds
-    abstract fun bindTimerFactory(factory: CrappyTimer.Factory): TimerFactory
+    abstract fun bindTimerFactory(factory: CountdownTimer.Factory): TimerFactory
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.guitarteacher.domain.Fretboard
 import com.example.guitarteacher.domain.Note
 import com.example.guitarteacher.utils.Timer
@@ -37,8 +38,6 @@ class MainFragment : Fragment() {
     private var periodMillis by notNull<Long>()
     private var guitarString by notNull<Int>()
 
-    private val jobs = mutableListOf<Job>()
-
     /** Timer for the entire lesson */
     private lateinit var lessonTimer: Timer
 
@@ -56,6 +55,7 @@ class MainFragment : Fragment() {
             // finish.invoke() whenever it wants to.
             onFinished = ::finish,
         )
+
     }
 
     override fun onCreateView(
@@ -74,63 +74,51 @@ class MainFragment : Fragment() {
         runLesson()
     }
 
-    private fun runLesson() {
-        lifecycleScope.launch {
-            lessonTimer.start()
-        }.let { jobs.add(it) }
-
-        lifecycleScope.launch {
-            startNoteLesson()
-        }.let { jobs.add(it) }
+    override fun onDestroy() {
+        super.onDestroy()
+        lessonTimer.cancel() // otherwise the timer will keep running if we navigate back mid-lesson
     }
 
-    private suspend fun startNoteLesson() {
-        while (true) {
-            val randomNote = getRandomNote()
-            val noteCountdown = newNoteCountdown()
-            remainingTimePb.progress = periodMillis.toInt()
-            noteTv.text = randomNote.noteString
-            fretAnswerTv.text = ""
+    private fun runLesson() {
+        lessonTimer.start()
+        startNoteLesson()
+    }
 
-            noteCountdown.start()
-            delay(periodMillis)
-            noteCountdown.cancel()
-            displayAnswer(randomNote)
-            delay(DISPLAY_ANSWER_DURATION_MILLIS)
+    private fun startNoteLesson() {
+        lifecycleScope.launch {
+            var finished: Boolean
 
+            val noteCountdown = timerFactory.createTimer(
+                totalTime = periodMillis,
+                tickLength = NOTE_COUNTDOWN_TIMER_TICK_LENGTH,
+                onTick = { millisRemaining ->
+                    remainingTimePb.progress = millisRemaining.toInt()
+                },
+                onFinished = { finished = true },
+            )
+            while (true) {
+                finished = false
+                noteCountdown.reset()
+                noteCountdown.start()
+                val randomNote = getRandomNote()
+                noteTv.text = randomNote.noteString
+                fretAnswerTv.text = ""
+
+                while (!finished) { delay(100) }
+                displayAnswer(randomNote)
+                delay(DISPLAY_ANSWER_DURATION_MILLIS)
+            }
         }
     }
 
-    /** get a new timer to be used to countdown for each note. */
-    private fun newNoteCountdown() = timerFactory.createTimer(
-        totalTime = periodMillis,
-        tickLength = NOTE_COUNTDOWN_TIMER_TICK_LENGTH,
-        onTick = { millisRemaining ->
-            remainingTimePb.progress = millisRemaining.toInt()
-        },
-        onFinished = {},
-    )
-
     private fun displayAnswer(note: Note) {
-        val correctFret = getFretForNoteOnString(note, guitarString)
+        val correctFret = fretboard.getFretForNoteOnString(note, guitarString)
         fretAnswerTv.text = correctFret.toString()
     }
 
     private fun finish() {
-        jobs.forEach {
-            it.cancel()
-        }
-    }
-
-    private fun getFretForNoteOnString(goalNote: Note, guitarString: Int): Int {
-        val openNote = fretboard.getTuningOfString(guitarString)
-        val openNoteIndex = Note.values().indexOf(openNote)
-        val goalNoteIndex = Note.values().indexOf(goalNote)
-
-        return Math.floorMod(
-            (goalNoteIndex - openNoteIndex),
-            Note.values().size
-        )
+        lessonTimer.cancel()
+        findNavController().navigate(R.id.toSetPreferences)
     }
 
     private fun getRandomNote() = Note.values().random()
