@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center_horizontal"
     android:paddingHorizontal="30dp"
-    android:paddingTop="50dp"
     tools:context=".LessonFragment">
 
     <TextView
@@ -15,49 +14,79 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="@dimen/note_lesson_small_text"
         android:textColor="@color/note_lesson_dark_text"
-        tools:text="String: 1st"
-        tools:ignore="SpUsage" />
+        android:textSize="@dimen/note_lesson_small_text"
+        app:layout_constraintBottom_toTopOf="@+id/mainTv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="SpUsage"
+        tools:text="String: 1st" />
 
     <TextView
         android:id="@+id/mainTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="@dimen/note_lesson_large_text"
-        android:textColor="@color/note_lesson_dark_text"
         android:includeFontPadding="false"
         android:lineSpacingExtra="0dp"
-        tools:text="A#"
-        tools:ignore="SpUsage" />
+        android:textAlignment="center"
+        android:textColor="@color/note_lesson_dark_text"
+        android:textSize="@dimen/note_lesson_large_text"
+        app:layout_constraintBottom_toBottomOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="SpUsage"
+        tools:text="A#" />
 
     <ProgressBar
         android:id="@+id/remainingTimePb"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:progressBackgroundTint="@color/primary"
-        tools:progress="50"
-        android:layout_width="match_parent"
+        android:layout_width="351dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:progressTint="@color/primary" />
+        android:progressBackgroundTint="@color/primary"
+        android:progressTint="@color/primary"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:progress="50" />
 
     <ImageButton
         android:id="@+id/pauseBtn"
-        android:layout_marginTop="50dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         android:src="@drawable/ic_pause_filled"
-        android:background="@android:color/transparent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/remainingTimePb"
+        app:layout_constraintVertical_bias="0.24000001" />
 
     <TextView
         android:id="@+id/lessonTimeTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="@dimen/note_lesson_small_text"
         android:textColor="@color/note_lesson_dark_text"
-        tools:text="3:46"
-        tools:ignore="SpUsage" />
+        android:textSize="@dimen/note_lesson_small_text"
+        app:layout_constraintEnd_toEndOf="@+id/pauseBtn"
+        app:layout_constraintStart_toStartOf="@+id/pauseBtn"
+        app:layout_constraintTop_toBottomOf="@+id/pauseBtn"
+        tools:ignore="SpUsage"
+        tools:text="3:46" />
 
-</LinearLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.66" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.33" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
