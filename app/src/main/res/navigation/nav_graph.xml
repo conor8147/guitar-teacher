@@ -16,7 +16,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.guitarteacher.LessonFragment"
-        tools:layout="@layout/fragment_main" >
+        tools:layout="@layout/fragment_lesson" >
         <action
             android:id="@+id/toSetPreferences"
             app:destination="@id/setPreferences" />

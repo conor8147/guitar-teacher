@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GuitarTeacher</string>
+    <string name="fret">Fret:</string>
+    <string name="guitar_string">String:</string>
 </resources>

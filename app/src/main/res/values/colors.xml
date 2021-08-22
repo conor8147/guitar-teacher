@@ -8,5 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="dark_text">#110036</color>
+    <!--app colors-->
+    <color name="primary">@color/purple_500</color>
+
+    <!--lesson fragment-->
+    <color name="note_lesson_dark_text">#110036</color>
 </resources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingHorizontal="30dp"
+    android:paddingTop="50dp"
+    tools:context=".LessonFragment">
+
+    <TextView
+        android:id="@+id/headingTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/note_lesson_small_text"
+        android:textColor="@color/note_lesson_dark_text"
+        tools:text="String: 1st"
+        tools:ignore="SpUsage" />
+
+    <TextView
+        android:id="@+id/mainTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/note_lesson_large_text"
+        android:textColor="@color/note_lesson_dark_text"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="0dp"
+        tools:text="A#"
+        tools:ignore="SpUsage" />
+
+    <ProgressBar
+        android:id="@+id/remainingTimePb"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:progressBackgroundTint="@color/primary"
+        tools:progress="50"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:progressTint="@color/primary" />
+
+    <ImageButton
+        android:id="@+id/pauseBtn"
+        android:layout_marginTop="50dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_pause_filled"
+        android:background="@android:color/transparent"/>
+
+    <TextView
+        android:id="@+id/lessonTimeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/note_lesson_small_text"
+        android:textColor="@color/note_lesson_dark_text"
+        tools:text="3:46"
+        tools:ignore="SpUsage" />
+
+</LinearLayout>

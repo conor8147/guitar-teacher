@@ -27,8 +27,9 @@ class LessonFragment : Fragment() {
     @Inject lateinit var timerFactory: TimerFactory
 
     lateinit var remainingTimePb: ProgressBar
-    lateinit var fretAnswerTv: TextView
-    lateinit var noteTv: TextView
+    lateinit var headingTv:TextView
+    lateinit var mainTv: TextView
+    lateinit var lessonTimeTv: TextView
 
     private var timePerNote by notNull<Long>()
     private var guitarString by notNull<Int>()
@@ -56,10 +57,11 @@ class LessonFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_main, container, false).apply {
+    ): View? = inflater.inflate(R.layout.fragment_lesson, container, false).apply {
         remainingTimePb = findViewById(R.id.remainingTimePb)
-        fretAnswerTv = findViewById(R.id.fretAnswerTv)
-        noteTv = findViewById((R.id.noteTv))
+        mainTv = findViewById(R.id.mainTv)
+        lessonTimeTv = findViewById(R.id.lessonTimeTv)
+        headingTv = findViewById(R.id.headingTv)
 
         remainingTimePb.max = timePerNote.toInt()
     }
@@ -96,19 +98,20 @@ class LessonFragment : Fragment() {
                 noteCountdown.reset()
                 noteCountdown.start()
                 val randomNote = getRandomNote()
-                noteTv.text = randomNote.noteString
-                fretAnswerTv.text = ""
+                headingTv.text = "${getString(R.string.guitar_string)} $guitarString"
+                mainTv.text = randomNote.noteString
 
                 while (!finished) { delay(100) }
                 displayAnswer(randomNote)
-                delay(DISPLAY_ANSWER_DURATION_MILLIS)
             }
         }
     }
 
-    private fun displayAnswer(note: Note) {
+    private suspend fun displayAnswer(note: Note) {
         val correctFret = fretboard.getFretForNoteOnString(note, guitarString)
-        fretAnswerTv.text = correctFret.toString()
+        headingTv.text = getString(R.string.fret)
+        mainTv.text = correctFret.toString()
+        delay(DISPLAY_ANSWER_DURATION_MILLIS)
     }
 
     private fun finish() {
