@@ -1,10 +1,10 @@
 package com.example.guitarteacher.di
 
 import android.content.Context
-import com.example.guitarteacher.AppRepository
-import com.example.guitarteacher.AppRepositoryImpl
+import com.example.guitarteacher.data.AppRepository
+import com.example.guitarteacher.data.AppRepositoryImpl
 import com.example.guitarteacher.domain.Fretboard
-import com.example.guitarteacher.StandardFretboard
+import com.example.guitarteacher.domain.StandardFretboard
 import com.example.guitarteacher.utils.TimerFactory
 import com.example.guitarteacher.utils.CountdownTimer
 import dagger.Binds

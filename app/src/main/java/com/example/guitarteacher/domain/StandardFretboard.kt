@@ -1,8 +1,6 @@
-package com.example.guitarteacher
+package com.example.guitarteacher.domain
 
 import com.example.guitarteacher.domain.Note.*
-import com.example.guitarteacher.domain.Fretboard
-import com.example.guitarteacher.domain.Note
 import javax.inject.Inject
 
 /**

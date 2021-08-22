@@ -1,4 +1,4 @@
-package com.example.guitarteacher
+package com.example.guitarteacher.data
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext

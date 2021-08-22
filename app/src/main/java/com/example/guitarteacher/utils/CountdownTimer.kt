@@ -13,6 +13,9 @@ class CountdownTimer private constructor(
     private val onTick: (Long) -> Unit,
 ) : Timer {
 
+    private var millisRemaining: Long = totalTime
+    private var running = false
+
     private var timer: CountDownTimer? = null
         set(newTimer) {
             timer?.cancel()
@@ -24,36 +27,52 @@ class CountdownTimer private constructor(
             timer = object : CountDownTimer(totalTime, tickLength) {
                 override fun onTick(millisUntilFinished: Long) {
                     onTick.invoke(millisUntilFinished)
+                    millisRemaining = millisUntilFinished
                 }
 
                 override fun onFinish() {
-                    onFinished()
+                    finish()
                 }
-            }.apply { start() }
+            }
+        }
+        if (!running) {
+            timer?.start()
+            running = true
         }
     }
 
     override fun pause() {
-        TODO("Not yet implemented")
+        running = false
+        timer?.cancel()
+        timer = object : CountDownTimer(millisRemaining, tickLength) {
+            override fun onTick(millisUntilFinished: Long) {
+                onTick.invoke(millisUntilFinished)
+                millisRemaining = millisUntilFinished
+            }
+
+            override fun onFinish() {
+                finish()
+            }
+        }
     }
 
-    override fun onFinished() {
+    fun finish() {
         onFinished.invoke()
-        reset()
-    }
-
-    override fun onTick(millisElapsed: Long) {
-        onTick.invoke(millisElapsed)
-    }
-
-    // TODO: investigate if there's any point in this
-    override fun reset() {
         cancel()
+    }
+
+    override fun reset() {
+        timer?.cancel()
+        timer = null
+        millisRemaining = totalTime
+        running = false
     }
 
     override fun cancel() {
         timer?.cancel()
         timer = null
+        millisRemaining = 0
+        running = false
     }
 
     /**

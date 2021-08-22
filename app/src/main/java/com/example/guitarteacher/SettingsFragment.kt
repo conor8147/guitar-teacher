@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.guitarteacher.data.AppRepository
 import com.example.guitarteacher.domain.Fretboard
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

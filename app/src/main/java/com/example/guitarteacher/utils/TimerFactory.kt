@@ -11,7 +11,6 @@ interface TimerFactory {
      * @param tickLength: The duration between ticks in milliseconds.
      * @param onFinished: function that will be executed when the timer finishes.
      * @param onTick: function that will be executed when the timer finishes.
-     * @param coroutineScope: The scope for coroutines used by this timer to run in.
      */
     fun createTimer(
         totalTime: Long,

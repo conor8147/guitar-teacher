@@ -17,16 +17,6 @@ interface Timer {
     fun pause()
 
     /**
-     * Called when the timer reaches 0.
-     */
-    fun onFinished()
-
-    /**
-     * Called at regular intervals while the timer is counting down. Tick length will not vary.
-     */
-    fun onTick(millisElapsed: Long)
-
-    /**
      * Resets the timer to its base state. No information about it's previous state is retained.
      * If the timer has not left it's base state (ie start() has not been called since the timer was
      * constructed/reset, this will have no effect.
