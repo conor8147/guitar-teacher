@@ -15,6 +15,7 @@ class CountdownTimer private constructor(
 
     private var millisRemaining: Long = totalTime
     private var running = false
+    private var isFinished = false
 
     private var timer: CountDownTimer? = null
         set(newTimer) {
@@ -58,6 +59,7 @@ class CountdownTimer private constructor(
 
     fun finish() {
         onFinished.invoke()
+        isFinished = true
         cancel()
     }
 
@@ -75,11 +77,13 @@ class CountdownTimer private constructor(
         running = false
     }
 
+    override fun isFinished() = isFinished
+
     /**
      * Set the constructor of the TimerImpl to be private and have a nested TimerFactory class here, so
      * that the only way to get a new instance of TimerImpl is by using TimerImpl.Factory.
      */
-    class Factory @Inject constructor() : TimerFactory {
+    class Factory @Inject constructor() : Timer.Factory {
 
         override fun createTimer(
             totalTime: Long,

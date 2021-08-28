@@ -42,12 +42,12 @@ class SettingsFragment : Fragment() {
 
         // Pre-fill fields with previous preferences
         timeEditText.setText(repository.getTotalTime().toString())
-        periodEditText.setText(repository.getTimePerNote().toString())
+        periodEditText.setText((repository.getTimePerNote() / 1000).toString())
         stringSpinner.setSelection(repository.getGuitarString() - 1)
 
         startBtn.setOnClickListener {
             repository.writeTotalTime(timeEditText.text.toString().toInt())
-            repository.writeTimePerNote(periodEditText.text.toString().toInt())
+            repository.writeTimePerNote(periodEditText.text.toString().toLong() * 1000)
             repository.writeGuitarString(stringSpinner.selectedItem as Int)
 
             findNavController().navigate(R.id.mainFragment)

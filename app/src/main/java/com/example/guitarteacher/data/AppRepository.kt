@@ -18,14 +18,14 @@ interface AppRepository {
     fun writeTotalTime(seconds: Int)
 
     /**
-     * Get time per note in seconds.
+     * Get time per note in milliseconds.
      */
-    fun getTimePerNote(): Int
+    fun getTimePerNote(): Long
 
     /**
      * Set time per note in seconds.
      */
-    fun writeTimePerNote(seconds: Int)
+    fun writeTimePerNote(seconds: Long)
 
     /**
      * Get guitar string the user will be tested on.
@@ -58,14 +58,14 @@ class AppRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getTimePerNote(): Int = sharedPrefs.getInt(
+    override fun getTimePerNote(): Long = sharedPrefs.getLong(
         ROUND_PERIOD_KEY,
-        DEFAULT_ROUND_PERIOD_SECONDS
+        DEFAULT_ROUND_PERIOD_MILLIS
     )
 
-    override fun writeTimePerNote(seconds: Int) {
+    override fun writeTimePerNote(millis: Long) {
         with(sharedPrefs.edit()) {
-            putInt(ROUND_PERIOD_KEY, seconds)
+            putLong(ROUND_PERIOD_KEY, millis)
             apply()
         }
     }
@@ -88,7 +88,7 @@ private const val ROUND_PERIOD_KEY = "round period key"
 private const val GUITAR_STRING_KEY = "guitar string key"
 
 private const val DEFAULT_LESSON_TIME_SECONDS = 600
-private const val DEFAULT_ROUND_PERIOD_SECONDS = 5
+private const val DEFAULT_ROUND_PERIOD_MILLIS = 5L
 private const val DEFAULT_GUITAR_STRING = 6
 
 private const val SHARED_PREFERENCES_FILE_KEY = "Shared preferences file key"
