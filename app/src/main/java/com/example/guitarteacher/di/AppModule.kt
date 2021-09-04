@@ -1,6 +1,7 @@
 package com.example.guitarteacher.di
 
 import android.content.Context
+import com.example.guitarteacher.LessonFragment
 import com.example.guitarteacher.data.AppRepository
 import com.example.guitarteacher.data.AppRepositoryImpl
 import com.example.guitarteacher.domain.Fretboard

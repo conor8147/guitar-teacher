@@ -11,16 +11,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class LessonPresenter(
-    private val view: LessonView,
-    private val coroutineScope: CoroutineScope,
+class LessonPresenter @Inject constructor(
+    private val view: LessonContract.View,
     private val fretboard: Fretboard,
     private val repository: AppRepository,
     private val timerFactory: Timer.Factory,
     private val applicationContext: Context,
-) {
+): LessonContract.Presenter {
+
+    private val coroutineScope: CoroutineScope = view.getCoroutineScope()
 
     /** Channel to communicate with noteCountdown coroutine when it is paused from the main thread */
     private val isPausedChannel = Channel<Boolean>(Channel.CONFLATED)
@@ -29,7 +31,7 @@ class LessonPresenter(
     private lateinit var lessonTimer: Timer
 
     @ExperimentalCoroutinesApi
-    fun startLesson() {
+    override fun startLesson() {
         view.setProgressMax(repository.getTimePerNote())
         lessonTimer = timerFactory.createTimer(
             totalTime = repository.getTotalTime() * 1000L,
@@ -42,17 +44,17 @@ class LessonPresenter(
         startNoteLesson()
     }
 
-    fun pauseLesson() {
+    override fun pauseLesson() {
         lessonTimer.pause()
         setNoteCountdownPaused(true)
     }
 
-    fun resumeLesson() {
+    override fun resumeLesson() {
         lessonTimer.start()
         setNoteCountdownPaused(false)
     }
 
-    fun endLesson() {
+    override fun endLesson() {
         isPausedChannel.close()
         lessonTimer.cancel() // otherwise the timer will keep running if we navigate back mid-lesson
     }

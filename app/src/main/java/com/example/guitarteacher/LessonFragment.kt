@@ -1,6 +1,5 @@
 package com.example.guitarteacher
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,43 +10,20 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.guitarteacher.data.AppRepository
-import com.example.guitarteacher.domain.Fretboard
-import com.example.guitarteacher.utils.Timer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import kotlin.properties.Delegates.notNull
 
 @AndroidEntryPoint
-class LessonFragment : Fragment(), LessonView {
+class LessonFragment : Fragment(), LessonContract.View {
 
-    @Inject
-    lateinit var fretboard: Fretboard
-    @Inject
-    lateinit var repository: AppRepository
-    @Inject
-    lateinit var timerFactory: Timer.Factory
+    @Inject lateinit var presenter: LessonPresenter
 
-    lateinit var remainingTimePb: ProgressBar
-    lateinit var headingTv: TextView
-    lateinit var mainTv: TextView
-    lateinit var lessonTimeTv: TextView
-    lateinit var pauseBtn: ImageButton
-
-    lateinit var presenter: LessonPresenter
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        presenter = LessonPresenter(
-            view = this,
-            coroutineScope = lifecycleScope,
-            fretboard = fretboard,
-            repository = repository,
-            timerFactory = timerFactory,
-            applicationContext = context.applicationContext,
-        )
-    }
+    private lateinit var remainingTimePb: ProgressBar
+    private lateinit var headingTv: TextView
+    private lateinit var mainTv: TextView
+    private lateinit var lessonTimeTv: TextView
+    private lateinit var pauseBtn: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,6 +66,8 @@ class LessonFragment : Fragment(), LessonView {
     override fun navigateUp() {
         findNavController().navigate(R.id.toSetPreferences)
     }
+
+    override fun getCoroutineScope(): CoroutineScope = lifecycleScope
 
     private fun View.bind() {
         remainingTimePb = findViewById(R.id.remainingTimePb)

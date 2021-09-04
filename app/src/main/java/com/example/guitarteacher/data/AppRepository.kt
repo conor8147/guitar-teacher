@@ -25,7 +25,7 @@ interface AppRepository {
     /**
      * Set time per note in seconds.
      */
-    fun writeTimePerNote(seconds: Long)
+    fun writeTimePerNote(millis: Long)
 
     /**
      * Get guitar string the user will be tested on.
