@@ -4,9 +4,7 @@ import android.content.Context
 import com.example.guitarteacher.data.AppRepository
 import com.example.guitarteacher.domain.Fretboard
 import com.example.guitarteacher.utils.Timer
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
 import org.junit.Test
@@ -54,11 +52,33 @@ class LessonPresenterUnitTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun startLessonStartsBothTimers() {
+    fun `starting lesson starts both timers`() {
         lessonPresenter.startLesson()
-        coroutineScope.advanceTimeBy(1)
-        assertTrue(lessonTimer?.started ?: false)
-        assertTrue(noteCountdown?.started ?: false)
+        assert(lessonTimer?.running == true)
+        assert(noteCountdown?.running == true)
     }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `pausing lesson pauses both timers`() {
+        lessonPresenter.startLesson()
+        lessonPresenter.pauseLesson()
+        coroutineScope.advanceTimeBy(100)
+        assert(lessonTimer?.paused == true)
+        assert(noteCountdown?.paused == true)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `pausing lesson then resuming restarts both timers`() {
+        lessonPresenter.startLesson()
+        lessonPresenter.pauseLesson()
+        lessonPresenter.resumeLesson()
+        coroutineScope.advanceTimeBy(100)
+        assert(lessonTimer?.running == true)
+        assert(noteCountdown?.running == true)
+    }
+
+
 
 }

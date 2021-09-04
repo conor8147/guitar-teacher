@@ -10,18 +10,18 @@ class TestTimer(
 ): Timer {
     private var time: Long = 0
     var paused = false
-    var started = false
+    var running = false
     var cancelled = false
 
     override fun start() {
         paused = false
-        started = true
+        running = true
         cancelled = false
     }
 
     override fun pause() {
         paused = true
-        started = false
+        running = false
         cancelled = false
     }
 
@@ -33,7 +33,7 @@ class TestTimer(
 
     override fun cancel() {
         paused = false
-        started = false
+        running = false
         cancelled = true
     }
 
