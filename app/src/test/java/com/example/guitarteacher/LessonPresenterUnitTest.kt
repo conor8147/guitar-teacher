@@ -3,15 +3,20 @@ package com.example.guitarteacher
 import android.content.Context
 import com.example.guitarteacher.data.AppRepository
 import com.example.guitarteacher.domain.Fretboard
+import com.example.guitarteacher.utils.TestTimer
 import com.example.guitarteacher.utils.Timer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.test.TestCoroutineScope
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.lang.Exception
+import java.nio.channels.ClosedChannelException
 
 class LessonPresenterUnitTest {
     private lateinit var lessonPresenter: LessonPresenter
@@ -79,6 +84,41 @@ class LessonPresenterUnitTest {
         assert(noteCountdown?.running == true)
     }
 
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `ending lesson closes channel`() {
+        lessonPresenter.startLesson()
+        coroutineScope.advanceTimeBy(100)
+        lessonPresenter.endLesson()
+        coroutineScope.advanceTimeBy(100)
+        assertThrows(ClosedSendChannelException::class.java) {
+            lessonPresenter.pauseLesson()
+        }
+    }
 
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `ending lesson closes channel even after many channel messages`() {
+        lessonPresenter.startLesson()
+        coroutineScope.advanceTimeBy(100)
+        repeat(100) {
+            lessonPresenter.pauseLesson()
+        }
+        lessonPresenter.endLesson()
+        assertThrows(ClosedSendChannelException::class.java) {
+            lessonPresenter.pauseLesson()
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `ending lesson stops both timers`() {
+        lessonPresenter.startLesson()
+        coroutineScope.advanceTimeBy(100)
+        lessonPresenter.endLesson()
+        coroutineScope.advanceTimeBy(100)
+        assert(lessonTimer?.cancelled == true)
+        assert(noteCountdown?.cancelled == true)
+    }
 
 }

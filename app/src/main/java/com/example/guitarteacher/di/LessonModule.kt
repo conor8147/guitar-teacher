@@ -20,18 +20,19 @@ abstract class LessonModule {
     abstract fun bindLessonView(fragment: LessonFragment): LessonContract.View
 
     @Binds
-    abstract fun provideLessonPresenter(presenter: LessonPresenter): LessonContract.Presenter
+    abstract fun bindLessonPresenter(presenter: LessonPresenter): LessonContract.Presenter
 
     @Binds
     abstract fun provideApplicationContext(@ApplicationContext context: Context): Context
-}
 
-@Module
-@InstallIn(FragmentComponent::class)
-object LessonFragmentModule {
+    @Module
+    @InstallIn(FragmentComponent::class)
+    object LessonFragmentProvider {
 
-    @Provides
-    fun provideLessonFragment(frag: Fragment): LessonFragment {
-        return frag as LessonFragment
+        @Provides
+        fun provideLessonFragment(frag: Fragment): LessonFragment {
+            return frag as LessonFragment
+        }
     }
+
 }

@@ -2,6 +2,7 @@ package com.example.guitarteacher
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.example.guitarteacher.data.AppRepository
 import com.example.guitarteacher.domain.Fretboard
 import com.example.guitarteacher.domain.Note
@@ -9,10 +10,11 @@ import com.example.guitarteacher.utils.Timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.nio.BufferOverflowException
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 class LessonPresenter @Inject constructor(
     private val view: LessonContract.View,
@@ -23,9 +25,9 @@ class LessonPresenter @Inject constructor(
 ): LessonContract.Presenter {
 
     private val coroutineScope: CoroutineScope = view.getCoroutineScope()
-
+    @VisibleForTesting
     /** Channel to communicate with noteCountdown coroutine when it is paused from the main thread */
-    private val isPausedChannel = Channel<Boolean>(Channel.CONFLATED)
+    private val countdownChannel: Channel<String> = Channel(Channel.CONFLATED)
 
     /** Timer for the entire lesson */
     private lateinit var lessonTimer: Timer
@@ -46,16 +48,19 @@ class LessonPresenter @Inject constructor(
 
     override fun pauseLesson() {
         lessonTimer.pause()
-        setNoteCountdownPaused(true)
+        countdownChannel.trySend(PAUSE)
+            .onFailure { throw it ?: BufferOverflowException() }
     }
 
     override fun resumeLesson() {
         lessonTimer.start()
-        setNoteCountdownPaused(false)
+        countdownChannel.trySend(START)
+            .onFailure { throw it ?: BufferOverflowException() }
     }
 
     override fun endLesson() {
-        isPausedChannel.close()
+        countdownChannel.trySend(CANCEL)
+        countdownChannel.close()
         lessonTimer.cancel() // otherwise the timer will keep running if we navigate back mid-lesson
     }
 
@@ -83,16 +88,10 @@ class LessonPresenter @Inject constructor(
             val randomNote = getRandomNote()
             noteCountdown.resetCountdown(randomNote)
             while (!finished) {
-                noteCountdown.checkIfPaused()
+                noteCountdown.checkChannel()
                 delay(100)
             }
             displayAnswer(randomNote)
-        }
-    }
-
-    private fun setNoteCountdownPaused(isPaused: Boolean) {
-        coroutineScope.launch {
-            isPausedChannel.send(isPaused)
         }
     }
 
@@ -105,12 +104,12 @@ class LessonPresenter @Inject constructor(
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun Timer.checkIfPaused() {
-        if (!isPausedChannel.isEmpty) {
-            if (isPausedChannel.receive()) {
-                pause()
-            } else {
-                start()
+    private suspend fun Timer.checkChannel() {
+        while (!countdownChannel.isEmpty) {
+            when (countdownChannel.receive()) {
+                CANCEL -> cancel()
+                PAUSE -> pause()
+                START -> start()
             }
         }
     }
@@ -129,3 +128,8 @@ class LessonPresenter @Inject constructor(
 private const val DISPLAY_ANSWER_DURATION_MILLIS = 2000L
 private const val LESSON_TIMER_TICK_LENGTH = 500L
 private const val NOTE_COUNTDOWN_TIMER_TICK_LENGTH = 10L
+
+// Constants for use with countdown channel
+private const val PAUSE = "pause"
+private const val CANCEL = "cancel"
+private const val START = "start"

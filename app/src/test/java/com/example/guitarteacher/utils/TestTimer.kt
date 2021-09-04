@@ -1,6 +1,4 @@
-package com.example.guitarteacher
-
-import com.example.guitarteacher.utils.Timer
+package com.example.guitarteacher.utils
 
 class TestTimer(
     private val totalTime: Long,
