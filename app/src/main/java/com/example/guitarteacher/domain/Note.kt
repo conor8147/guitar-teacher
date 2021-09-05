@@ -1,6 +1,6 @@
 package com.example.guitarteacher.domain
 
-enum class Note(val noteString: String) {
+enum class Note(val asString: String) {
     A("A"),
     A_SHARP("A#"),
     B("B"),

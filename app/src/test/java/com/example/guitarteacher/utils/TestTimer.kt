@@ -43,7 +43,7 @@ class TestTimer(
         for (i in 0..millis step tickLength) {
             time += i
             if (time < totalTime) {
-                onTick.invoke(time)
+                onTick.invoke(totalTime - time)
             } else {
                 onFinished.invoke()
             }

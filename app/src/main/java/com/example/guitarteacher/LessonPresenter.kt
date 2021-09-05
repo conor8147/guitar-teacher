@@ -1,7 +1,6 @@
 package com.example.guitarteacher
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.example.guitarteacher.data.AppRepository
 import com.example.guitarteacher.domain.Fretboard
@@ -11,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.channels.onSuccess
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.nio.BufferOverflowException
@@ -21,13 +21,10 @@ class LessonPresenter @Inject constructor(
     private val fretboard: Fretboard,
     private val repository: AppRepository,
     private val timerFactory: Timer.Factory,
-    private val applicationContext: Context,
-): LessonContract.Presenter {
+    private val countdownChannel: Channel<String>,
+) : LessonContract.Presenter {
 
     private val coroutineScope: CoroutineScope = view.getCoroutineScope()
-    @VisibleForTesting
-    /** Channel to communicate with noteCountdown coroutine when it is paused from the main thread */
-    private val countdownChannel: Channel<String> = Channel(Channel.CONFLATED)
 
     /** Timer for the entire lesson */
     private lateinit var lessonTimer: Timer
@@ -36,7 +33,7 @@ class LessonPresenter @Inject constructor(
     override fun startLesson() {
         view.setProgressMax(repository.getTimePerNote())
         lessonTimer = timerFactory.createTimer(
-            totalTime = repository.getTotalTime() * 1000L,
+            totalTime = repository.getTotalTime(),
             tickLength = LESSON_TIMER_TICK_LENGTH,
             onTick = { millisRemaining -> updateLessonTime(millisRemaining) },
             onFinished = ::endLesson,
@@ -49,13 +46,11 @@ class LessonPresenter @Inject constructor(
     override fun pauseLesson() {
         lessonTimer.pause()
         countdownChannel.trySend(PAUSE)
-            .onFailure { throw it ?: BufferOverflowException() }
     }
 
     override fun resumeLesson() {
         lessonTimer.start()
         countdownChannel.trySend(START)
-            .onFailure { throw it ?: BufferOverflowException() }
     }
 
     override fun endLesson() {
@@ -65,10 +60,13 @@ class LessonPresenter @Inject constructor(
     }
 
     private fun updateLessonTime(timeRemaining: Long) {
-        val minutesRemaining = timeRemaining / 60_000
-        val secondsRemaining = (timeRemaining / 1000) % 60
+        view.updateLessonTimer(timeRemaining.formatAsTimeString())
+    }
 
-        view.updateLessonTimer("$minutesRemaining:$secondsRemaining")
+    private fun Long.formatAsTimeString(): String {
+        val minutesRemaining = this / 60_000
+        val secondsRemaining = (this / 1000) % 60
+        return "$minutesRemaining:$secondsRemaining"
     }
 
     @ExperimentalCoroutinesApi
@@ -99,25 +97,26 @@ class LessonPresenter @Inject constructor(
     private fun Timer.resetCountdown(randomNote: Note) {
         reset()
         start()
-        view.updateHeading("${applicationContext.getString(R.string.guitar_string)} ${repository.getGuitarString()}")
-        view.updateMainText(randomNote.noteString)
+        view.displayNoteAndString(randomNote.asString, repository.getGuitarString())
     }
 
     @ExperimentalCoroutinesApi
-    private suspend fun Timer.checkChannel() {
-        while (!countdownChannel.isEmpty) {
-            when (countdownChannel.receive()) {
-                CANCEL -> cancel()
-                PAUSE -> pause()
-                START -> start()
-            }
+    private fun Timer.checkChannel() {
+        if (!countdownChannel.isEmpty) {
+            countdownChannel.tryReceive()
+                .onSuccess {
+                    when (it) {
+                        CANCEL -> cancel()
+                        PAUSE -> pause()
+                        START -> start()
+                    }
+                }
         }
     }
 
     private suspend fun displayAnswer(note: Note) {
         val correctFret = fretboard.getFretForNoteOnString(note, repository.getGuitarString())
-        view.updateHeading(applicationContext.getString(R.string.fret))
-        view.updateMainText(correctFret.toString())
+        view.displayAnswer(correctFret)
         delay(DISPLAY_ANSWER_DURATION_MILLIS)
     }
 
@@ -126,7 +125,7 @@ class LessonPresenter @Inject constructor(
 }
 
 private const val DISPLAY_ANSWER_DURATION_MILLIS = 2000L
-private const val LESSON_TIMER_TICK_LENGTH = 500L
+private const val LESSON_TIMER_TICK_LENGTH = 100L
 private const val NOTE_COUNTDOWN_TIMER_TICK_LENGTH = 10L
 
 // Constants for use with countdown channel

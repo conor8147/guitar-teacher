@@ -8,14 +8,14 @@ import javax.inject.Singleton
 interface AppRepository {
 
     /**
-     * Get total time of a lesson in seconds.
+     * Get total time of a lesson in milliseconds.
      */
-    fun getTotalTime(): Int
+    fun getTotalTime(): Long
 
     /**
-     * Set the total time for a lesson in seconds.
+     * Set the total time for a lesson in milliseconds.
      */
-    fun writeTotalTime(seconds: Int)
+    fun writeTotalTime(millis: Long)
 
     /**
      * Get time per note in milliseconds.
@@ -23,7 +23,7 @@ interface AppRepository {
     fun getTimePerNote(): Long
 
     /**
-     * Set time per note in seconds.
+     * Set time per note in milliseconds.
      */
     fun writeTimePerNote(millis: Long)
 
@@ -46,14 +46,14 @@ class AppRepositoryImpl @Inject constructor(
 ): AppRepository {
     private val sharedPrefs = context.getSharedPreferences(SHARED_PREFERENCES_FILE_KEY, Context.MODE_PRIVATE)
 
-    override fun getTotalTime(): Int = sharedPrefs.getInt(
+    override fun getTotalTime(): Long = sharedPrefs.getLong(
         TOTAL_TIME_KEY,
-        DEFAULT_LESSON_TIME_SECONDS
+        DEFAULT_LESSON_TIME_MILLIS,
     )
 
-    override fun writeTotalTime(seconds: Int) {
+    override fun writeTotalTime(millis: Long) {
         with(sharedPrefs.edit()) {
-            putInt(TOTAL_TIME_KEY, seconds)
+            putLong(TOTAL_TIME_KEY, millis)
             apply()
         }
     }
@@ -87,7 +87,7 @@ private const val TOTAL_TIME_KEY = "total time key"
 private const val ROUND_PERIOD_KEY = "round period key"
 private const val GUITAR_STRING_KEY = "guitar string key"
 
-private const val DEFAULT_LESSON_TIME_SECONDS = 600
+private const val DEFAULT_LESSON_TIME_MILLIS = 60_000L
 private const val DEFAULT_ROUND_PERIOD_MILLIS = 5L
 private const val DEFAULT_GUITAR_STRING = 6
 

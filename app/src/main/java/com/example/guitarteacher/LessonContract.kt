@@ -9,15 +9,15 @@ interface LessonContract {
 
         fun updateProgress(millisRemaining: Long)
 
-        fun updateHeading(newHeading: String)
-
-        fun updateMainText(text: String)
-
         fun updateLessonTimer(text: String)
 
         fun navigateUp()
 
         fun getCoroutineScope(): CoroutineScope
+
+        fun displayNoteAndString(note: String, guitarString: Int)
+
+        fun displayAnswer(correctFret: Int)
     }
 
     interface Presenter {

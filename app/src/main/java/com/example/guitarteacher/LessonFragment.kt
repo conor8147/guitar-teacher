@@ -51,14 +51,6 @@ class LessonFragment : Fragment(), LessonContract.View {
         remainingTimePb.progress = millisRemaining.toInt()
     }
 
-    override fun updateHeading(newHeading: String) {
-        headingTv.text = newHeading
-    }
-
-    override fun updateMainText(text: String) {
-        mainTv.text = text
-    }
-
     override fun updateLessonTimer(text: String) {
         lessonTimeTv.text = text
     }
@@ -68,6 +60,16 @@ class LessonFragment : Fragment(), LessonContract.View {
     }
 
     override fun getCoroutineScope(): CoroutineScope = lifecycleScope
+
+    override fun displayNoteAndString(note: String, guitarString: Int) {
+        headingTv.text = "String: $guitarString"
+        mainTv.text = note
+    }
+
+    override fun displayAnswer(correctFret: Int) {
+        headingTv.text = requireContext().getString(R.string.fret)
+        mainTv.text = correctFret.toString()
+    }
 
     private fun View.bind() {
         remainingTimePb = findViewById(R.id.remainingTimePb)
